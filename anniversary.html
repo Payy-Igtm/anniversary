@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>for us 🤍</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+  font-family:Poppins,sans-serif;
+  height:100vh;
+  overflow:hidden;
+  color:white;
+  cursor:pointer;
+}
+
+/* background foto + pink overlay */
+.bg{
+  position:fixed;
+  inset:0;
+  background:
+    linear-gradient(
+      rgba(255,120,180,.55),
+      rgba(120,0,60,.65)
+    ),
+    url("foto1.jpeg") center/cover no-repeat;
+  filter:blur(2px);
+  transform:scale(1.05);
+  z-index:-2;
+}
+
+/* vignette + grain */
+.bg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at center,transparent 40%,rgba(0,0,0,.6)),
+    url("https://grainy-gradients.vercel.app/noise.svg");
+  opacity:.35;
+}
+
+/* intro */
+#intro{
+  position:fixed;
+  inset:0;
+  background:black;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  z-index:99;
+  animation:introFade 3s forwards;
+}
+@keyframes introFade{
+  0%,70%{opacity:1}
+  100%{opacity:0;pointer-events:none}
+}
+
+/* title */
+.title{
+  position:absolute;
+  top:24px;
+  width:100%;
+  text-align:center;
+  font-size:26px;
+  font-weight:600;
+}
+
+/* music */
+.music{
+  position:absolute;
+  top:20px;
+  right:20px;
+  font-size:12px;
+  cursor:pointer;
+  opacity:.8;
+}
+
+/* floating hearts (auto) */
+.auto-love{
+  position:absolute;
+  font-size:18px;
+  animation:autoLove linear forwards;
+  opacity:.85;
+  pointer-events:none;
+}
+@keyframes autoLove{
+  from{transform:translateY(110vh) scale(.6)}
+  to{transform:translateY(-120px) scale(1.2)}
+}
+
+/* click hearts */
+.click-love{
+  position:absolute;
+  font-size:20px;
+  animation:clickLove 1.6s forwards;
+}
+@keyframes clickLove{
+  to{
+    opacity:0;
+    transform:translate(var(--x),var(--y)) scale(1.6);
+  }
+}
+
+/* envelope */
+.envelope{
+  position:absolute;
+  bottom:40px;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  height:140px;
+  background:linear-gradient(135deg,#ff5fa2,#ff9ecb);
+  border-radius:16px;
+  cursor:pointer;
+  box-shadow:0 25px 60px rgba(255,120,200,.6);
+}
+.envelope:before{
+  content:"";
+  position:absolute;
+  border-left:110px solid transparent;
+  border-right:110px solid transparent;
+  border-top:70px solid rgba(255,255,255,.4);
+}
+
+/* letter */
+.letter{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:200px;
+  height:0;
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+  transition:1s ease;
+}
+.letter.open{
+  height:300px;
+  bottom:135px;
+}
+.letter p{
+  padding:20px;
+  color:#333;
+  font-size:14px;
+  line-height:1.6;
+  text-align:center;
+}
+
+/* gift */
+.gift{
+  position:absolute;
+  bottom:220px;
+  right:30px;
+  font-size:48px;
+  cursor:pointer;
+  animation:bounce 2s infinite;
+}
+@keyframes bounce{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-10px)}
+}
+
+/* overlay */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:none;
+  z-index:50;
+}
+.overlay.active{display:block}
+
+/* flower scene */
+.scene{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:400px;
+  height:600px;
+}
+
+/* grow flower */
+.flower{
+  position:absolute;
+  bottom:-40px;
+  width:100%;
+  transform-origin:bottom center;
+  animation:grow 3s ease forwards;
+}
+@keyframes grow{
+  from{transform:scaleY(0)}
+  to{transform:scaleY(1)}
+}
+
+svg{
+  filter:drop-shadow(0 0 25px rgba(255,120,180,.6));
+}
+
+/* text */
+.text{
+  position:absolute;
+  top:40px;
+  width:100%;
+  text-align:center;
+  font-size:18px;
+  opacity:0;
+  animation:fadeIn 2s forwards;
+  animation-delay:2.6s;
+}
+@keyframes fadeIn{to{opacity:1}}
+</style>
+</head>
+
+<body>
+
+<div class="bg"></div>
+
+<div id="intro">for us 🤍</div>
+<div class="title">happy 3 years with you</div>
+<div class="music" onclick="toggleMusic()">music</div>
+
+<div class="envelope" onclick="openLetter()">
+  <div class="letter" id="letter">
+    <p>
+      3 tahun bukan waktu singkat.<br><br>
+      kita sudah sejauh ini,<br>
+      bukan tanpa lelah.<br><br>
+      tapi selalu saling pulang.<br><br>
+      selama masih kamu,
+      aku baik-baik saja.🤍
+    </p>
+  </div>
+</div>
+
+<div class="gift" onclick="openGift()">🎁</div>
+<div class="overlay" id="overlay"></div>
+
+<audio id="music" loop>
+  <source src="lagu.mp3">
+</audio>
+
+<script>
+/* auto floating hearts */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="auto-love";
+  h.innerHTML=Math.random()>0.5?"🤍":"💗";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(8+Math.random()*6)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),14000);
+},700);
+
+/* click anywhere */
+document.addEventListener("click",e=>{
+  for(let i=0;i<8;i++){
+    const c=document.createElement("div");
+    c.className="click-love";
+    c.innerHTML="🤍";
+    c.style.left=e.clientX+"px";
+    c.style.top=e.clientY+"px";
+    c.style.setProperty("--x",(Math.random()*220-110)+"px");
+    c.style.setProperty("--y",(Math.random()*220-110)+"px");
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1600);
+  }
+});
+
+/* letter */
+function openLetter(){
+  document.getElementById("letter").classList.toggle("open");
+}
+
+/* gift + flower */
+function openGift(){
+  const o=document.getElementById("overlay");
+  o.innerHTML=`
+    <div class="scene">
+      <div class="text">bunga abadi yg akan selalu menjadi milikmu</div>
+      <div class="flower" onclick="flowerLove(event)">
+        <svg viewBox="0 0 400 600" xmlns="http://www.w3.org/2000/svg">
+          <path d="M200 600 C190 450 200 300 200 150"
+                stroke="#ff6fae" stroke-width="8" fill="none"/>
+          <path d="M200 420 C140 380 120 340 140 320
+                   C180 300 220 360 200 420Z"
+                fill="#ff9acb"/>
+          <path d="M200 360 C260 330 290 290 260 270
+                   C220 250 190 310 200 360Z"
+                fill="#ff7fbf"/>
+          <g transform="translate(200 120)">
+            <ellipse rx="26" ry="60" fill="#ffb6d9" transform="rotate(0)"/>
+            <ellipse rx="26" ry="60" fill="#ff8fc7" transform="rotate(60)"/>
+            <ellipse rx="26" ry="60" fill="#ffb6d9" transform="rotate(120)"/>
+            <ellipse rx="26" ry="60" fill="#ff8fc7" transform="rotate(180)"/>
+            <ellipse rx="26" ry="60" fill="#ffb6d9" transform="rotate(240)"/>
+            <ellipse rx="26" ry="60" fill="#ff8fc7" transform="rotate(300)"/>
+            <circle r="16" fill="#fff"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  `;
+  o.classList.add("active");
+  setTimeout(()=>o.classList.remove("active"),7000);
+}
+
+/* click flower */
+function flowerLove(e){
+  for(let i=0;i<28;i++){
+    const l=document.createElement("div");
+    l.className="click-love";
+    l.innerHTML="💗";
+    l.style.left=e.clientX+"px";
+    l.style.top=e.clientY+"px";
+    l.style.setProperty("--x",(Math.random()*300-150)+"px");
+    l.style.setProperty("--y",(Math.random()*300-150)+"px");
+    document.body.appendChild(l);
+    setTimeout(()=>l.remove(),1600);
+  }
+}
+
+/* music */
+let play=false;
+const m=document.getElementById("music");
+function toggleMusic(){
+  play?m.pause():m.play();
+  play=!play;
+}
+</script>
+
+</body>
+</html>
